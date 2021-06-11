@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  mongodb:
+    image: "mongo"
+    volumes:
+      - data-volume:/data/db
+    ports: 
+      - '27017:27017'
+    networks:
+      - webnet
+  
+  backend:
+    build: ./backend/
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '5000:5000'
+    depends_on: 
+      - mongodb
+    networks:
+      - webnet
+
+  app:
+    build: ./app/
+    volumes: 
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    ports: 
+      - '3000:3000'
+    depends_on: 
+      - backend
+    networks:
+      - webnet
+      
+volumes:
+  data-volume:
+networks:
+  webnet:
